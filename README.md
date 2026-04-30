@@ -27,11 +27,12 @@
 ## Структура проекта
 ```
 web_homework/
+├── templates/                    
+│   ├── catalog.html           # страница каталога
+│   ├── category1.html         # страница категории
+│   ├── contacts.html          # страница контактов с формой
+│   └── index.html             # главная страница
 ├── .gitignore             # bсключённые файлы
-├── index.html             # главная страница
-├── catalog.html           # страница каталога
-├── category1.html         # страница категории
-├── contacts.html          # страница контактов с формой
 ├── main.py                # веб-сервер
 └── README.md
 ```

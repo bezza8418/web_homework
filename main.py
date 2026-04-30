@@ -1,9 +1,16 @@
+"""
+Веб-приложение для домашнего задания.
+Сервер на чистом Python с Bootstrap формой обратной связи.
+"""
+
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
 
 
 class MyHandler(BaseHTTPRequestHandler):
+    """Обработчик HTTP запросов"""
 
+    # noinspection PyPep8Naming
     def do_GET(self):
         """Обработка GET-запросов"""
         parsed_url = urlparse(self.path)
@@ -19,12 +26,11 @@ class MyHandler(BaseHTTPRequestHandler):
         elif path == "/contacts":
             self.serve_html("contacts.html")
         else:
-            # Страница 404 - используем английский текст для статуса
+            # Страница 404
             self.send_response(404)
             self.send_header("Content-type", "text/html; charset=utf-8")
             self.end_headers()
 
-            # Отправляем красивую страницу 404 на русском
             error_page = """
             <!DOCTYPE html>
             <html>
@@ -47,22 +53,15 @@ class MyHandler(BaseHTTPRequestHandler):
             """
             self.wfile.write(error_page.encode('utf-8'))
 
+    # noinspection PyPep8Naming
     def do_POST(self):
         """Обработка POST-запросов (для формы контактов)"""
         if self.path == "/contacts":
-            # Получаем длину содержимого
             content_length = int(self.headers.get('Content-Length', 0))
-
-            # Читаем данные из тела запроса
             post_data = self.rfile.read(content_length)
-
-            # Декодируем данные
             data_string = post_data.decode('utf-8')
-
-            # Парсим данные из формы
             parsed_data = parse_qs(data_string)
 
-            # Выводим в консоль красиво
             print("\n" + "=" * 50)
             print("📬 Получены данные из формы контактов:")
             print("=" * 50)
@@ -70,12 +69,10 @@ class MyHandler(BaseHTTPRequestHandler):
                 print(f"{key}: {value[0]}")
             print("=" * 50 + "\n")
 
-            # Отправляем ответ пользователю
             self.send_response(200)
             self.send_header("Content-type", "text/html; charset=utf-8")
             self.end_headers()
 
-            # Отправляем страницу с подтверждением
             response = """
             <!DOCTYPE html>
             <html>
@@ -104,9 +101,9 @@ class MyHandler(BaseHTTPRequestHandler):
             self.wfile.write(b"<h1>404 - Page not found</h1>")
 
     def serve_html(self, filename):
-        """Вспомогательная функция для отправки HTML-файлов"""
+        """Вспомогательная функция для отправки HTML-файлов из папки templates"""
         try:
-            with open(filename, 'r', encoding='utf-8') as file:
+            with open(f"templates/{filename}", 'r', encoding='utf-8') as file:
                 content = file.read()
 
             self.send_response(200)
@@ -117,13 +114,14 @@ class MyHandler(BaseHTTPRequestHandler):
             self.send_response(404)
             self.send_header("Content-type", "text/html; charset=utf-8")
             self.end_headers()
-            self.wfile.write(f"<h1>404 - Файл {filename} не найден</h1>".encode('utf-8'))
+            self.wfile.write(f"<h1>404 - Файл {filename} не найден в папке templates</h1>".encode('utf-8'))
 
 
 def run_server(port=8080):
     """Запуск сервера"""
     server_address = ('localhost', port)
-    httpd = HTTPServer(server_address, MyHandler)
+    # type:
+    httpd = HTTPServer(server_address, MyHandler)  # type: ignore
     print(f"🚀 Сервер запущен на http://localhost:{port}")
     print("📝 Чтобы остановить сервер, нажмите Ctrl+C")
     print("\nДоступные страницы:")
